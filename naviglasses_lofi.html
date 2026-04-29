@@ -445,6 +445,22 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 600px) {
+    body { padding: 12px 8px; }
+    .page-title { font-size: 20px; }
+    .subtitle { font-size: 13px; }
+    .task-section { padding: 12px 8px; }
+    .task-label { font-size: 14px; }
+    .us-tag { font-size: 11px; }
+    .frame { min-width: 110px; width: 110px; }
+    .frame-caption { max-width: 110px; font-size: 10px; }
+    .frames-row-with-arrows { gap: 2px; }
+    .arrow { font-size: 16px; }
+    .annotation { font-size: 11px; }
   }
 </style>
 </head>

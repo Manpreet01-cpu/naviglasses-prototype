@@ -876,6 +876,83 @@ body {
   max-height: 460px;
   padding-bottom: 60px;
 }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .logo { font-size: 17px; }
+  .header-badge { font-size: 10px; }
+  .app-header div:last-child { display: none; }
+
+  .nav-tabs {
+    padding: 8px 8px 0;
+    gap: 2px;
+  }
+  .nav-tab {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  /* Stack layout vertically on mobile */
+  .main {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  /* Hide sidebar on mobile — replaced by flow buttons */
+  .sidebar { display: none; }
+
+  /* Annotations panel becomes full-width below device */
+  .annotations-panel {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding: 14px;
+  }
+
+  .preview-area {
+    padding: 16px 12px 8px;
+    overflow: visible;
+  }
+
+  /* Scale down phone device */
+  .phone-device {
+    width: 240px;
+    padding: 10px;
+    border-radius: 32px;
+  }
+  .phone-screen { min-height: 420px; border-radius: 22px; }
+  .phone-notch { width: 70px; height: 18px; margin-bottom: 8px; }
+
+  /* Scale down HUD device */
+  .hud-device { width: 300px; padding: 12px; }
+  .hud-viewfinder { min-height: 300px; padding: 20px 12px 12px; }
+
+  /* Flow nav buttons — scrollable row */
+  .nav-flow-btns {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+  .flow-btn { font-size: 11px; padding: 5px 10px; white-space: nowrap; }
+
+  /* Shrink HUD elements slightly */
+  .hud-arrow-icon { font-size: 42px; }
+  .hud-street-name { font-size: 15px; }
+  .hud-dist { font-size: 11px; }
+  .meter-num { font-size: 34px; }
+  .countdown-num { font-size: 22px; }
+
+  /* Annotation cards */
+  .ann-card { padding: 10px; }
+  .ann-text { font-size: 11px; }
+}
 </style>
 </head>
 <body>
@@ -892,11 +969,14 @@ body {
 
 <!-- Navigation Tabs -->
 <div class="nav-tabs">
+  <div class="nav-tab" onclick="showSpecial('home')">🏠 Home</div>
   <div class="nav-tab active" onclick="switchFlow(0)">TF1: AR Navigation</div>
   <div class="nav-tab" onclick="switchFlow(1)">TF2: Lane Guidance</div>
   <div class="nav-tab" onclick="switchFlow(2)">TF3: Cyclist Mode</div>
   <div class="nav-tab" onclick="switchFlow(3)">TF4: CBD Overlap</div>
   <div class="nav-tab" onclick="switchFlow(4)">TF5: Notifications</div>
+  <div class="nav-tab" onclick="showSpecial('map')">🗺 Map</div>
+  <div class="nav-tab" onclick="showSpecial('settings')">⚙️ Settings</div>
 </div>
 
 <!-- Main -->
@@ -967,8 +1047,8 @@ const flows = [
           </div>
           <div class="app-bottom-nav">
             <div class="bottom-tab active"><span class="bottom-tab-icon">🔍</span>Search</div>
-            <div class="bottom-tab"><span class="bottom-tab-icon">🗺</span>Map</div>
-            <div class="bottom-tab"><span class="bottom-tab-icon">⚙️</span>Settings</div>
+            <div class="bottom-tab" onclick="showSpecial('map')"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab" onclick="showSpecial('settings')"><span class="bottom-tab-icon">⚙️</span>Settings</div>
           </div>
         `
       },
@@ -1258,8 +1338,8 @@ const flows = [
           <div class="big-btn" onclick="nextStep()">Start Ride on Glasses</div>
           <div class="app-bottom-nav">
             <div class="bottom-tab active"><span class="bottom-tab-icon">🚲</span>Ride</div>
-            <div class="bottom-tab"><span class="bottom-tab-icon">🗺</span>Map</div>
-            <div class="bottom-tab"><span class="bottom-tab-icon">⚙️</span>Settings</div>
+            <div class="bottom-tab" onclick="showSpecial('map')"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab" onclick="showSpecial('settings')"><span class="bottom-tab-icon">⚙️</span>Settings</div>
           </div>
         `
       },
@@ -1526,7 +1606,7 @@ const flows = [
           <div class="big-btn" onclick="nextStep()">Save Settings</div>
           <div class="app-bottom-nav">
             <div class="bottom-tab"><span class="bottom-tab-icon">🔍</span>Search</div>
-            <div class="bottom-tab"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab" onclick="showSpecial('map')"><span class="bottom-tab-icon">🗺</span>Map</div>
             <div class="bottom-tab active"><span class="bottom-tab-icon">⚙️</span>Settings</div>
           </div>
         `
@@ -1641,8 +1721,8 @@ const flows = [
           <div class="big-btn outline" onclick="nextStep()">View Queued Messages</div>
           <div class="app-bottom-nav">
             <div class="bottom-tab active"><span class="bottom-tab-icon">📊</span>Summary</div>
-            <div class="bottom-tab"><span class="bottom-tab-icon">🗺</span>Map</div>
-            <div class="bottom-tab"><span class="bottom-tab-icon">⚙️</span>Settings</div>
+            <div class="bottom-tab" onclick="showSpecial('map')"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab" onclick="showSpecial('settings')"><span class="bottom-tab-icon">⚙️</span>Settings</div>
           </div>
         `
       }
@@ -1653,11 +1733,258 @@ const flows = [
 // ===================== STATE =====================
 let currentFlow = 0;
 let currentScreen = 0;
+let specialMode = null; // 'home' | 'map' | 'settings' | null
+
+function showSpecial(mode) {
+  specialMode = mode;
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  if (mode === 'home') document.querySelectorAll('.nav-tab')[0].classList.add('active');
+  if (mode === 'map') document.querySelectorAll('.nav-tab')[6].classList.add('active');
+  if (mode === 'settings') document.querySelectorAll('.nav-tab')[7].classList.add('active');
+  renderSpecial(mode);
+}
+
+function renderSpecial(mode) {
+  // Sidebar
+  document.getElementById('sidebar-title').textContent = mode === 'home' ? 'Home' : mode === 'map' ? 'Map View' : 'Settings';
+  document.getElementById('screen-list').innerHTML = `<div class="screen-item active"><span class="screen-num">01</span>${mode === 'home' ? 'Landing Screen' : mode === 'map' ? 'Map View' : 'Settings Panel'}</div>`;
+
+  // Device label
+  document.getElementById('device-label').textContent = '📱 Companion App';
+
+  // Device content
+  const container = document.getElementById('device-container');
+  let html = '';
+
+  if (mode === 'home') {
+    html = `
+      <div class="phone-device">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-bar"><span>9:41</span><span>NaviGlasses</span><span>100%</span></div>
+          <div style="padding:20px 16px 12px; text-align:center;">
+            <div style="font-size:36px; margin-bottom:6px;">👓</div>
+            <div style="font-size:22px; font-weight:700; background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">NaviGlasses</div>
+            <div style="font-size:12px; color:var(--text-dim); margin-top:4px;">Hands-free AR Navigation</div>
+          </div>
+          <div style="margin:0 16px 10px; background:rgba(0,230,118,0.08); border:1px solid rgba(0,230,118,0.2); border-radius:12px; padding:10px 14px; display:flex; align-items:center; gap:10px;">
+            <div style="font-size:20px;">👓</div>
+            <div>
+              <div style="font-size:13px; font-weight:600; color:var(--success);">Glasses Connected ✓</div>
+              <div style="font-size:11px; color:var(--text-dim);">Battery 94% · GPS ready</div>
+            </div>
+          </div>
+          <div style="margin:0 16px 8px; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); font-weight:600;">Quick Start</div>
+          <div class="place-row" onclick="switchFlow(0)">
+            <div class="place-icon">🚗</div>
+            <div class="place-info"><div class="place-name">Start AR Navigation</div><div class="place-sub">Voice-activated HUD guidance</div></div>
+            <div style="color:var(--accent);">→</div>
+          </div>
+          <div class="place-row" onclick="switchFlow(1)">
+            <div class="place-icon">🛣</div>
+            <div class="place-info"><div class="place-name">Lane Guidance</div><div class="place-sub">Multi-lane highway assist</div></div>
+            <div style="color:var(--accent);">→</div>
+          </div>
+          <div class="place-row" onclick="switchFlow(2)">
+            <div class="place-icon">🚲</div>
+            <div class="place-info"><div class="place-name">Cyclist Mode</div><div class="place-sub">Haptic + peripheral navigation</div></div>
+            <div style="color:var(--accent);">→</div>
+          </div>
+          <div class="place-row" onclick="switchFlow(3)">
+            <div class="place-icon">🏙</div>
+            <div class="place-info"><div class="place-name">CBD Navigation</div><div class="place-sub">Overlapping roads depth mode</div></div>
+            <div style="color:var(--accent);">→</div>
+          </div>
+          <div class="place-row" onclick="switchFlow(4)">
+            <div class="place-icon">🔕</div>
+            <div class="place-info"><div class="place-name">Drive Mode Settings</div><div class="place-sub">Notification filtering</div></div>
+            <div style="color:var(--accent);">→</div>
+          </div>
+          <div class="app-bottom-nav">
+            <div class="bottom-tab active" onclick="showSpecial('home')"><span class="bottom-tab-icon">🏠</span>Home</div>
+            <div class="bottom-tab" onclick="showSpecial('map')"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab" onclick="showSpecial('settings')"><span class="bottom-tab-icon">⚙️</span>Settings</div>
+          </div>
+        </div>
+      </div>`;
+  } else if (mode === 'map') {
+    html = `
+      <div class="phone-device">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-bar"><span>9:41</span><span>🗺 Map</span><span>100%</span></div>
+          <div class="screen-title-bar"><div class="screen-title">Map View</div></div>
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <span>Search destination…</span>
+          </div>
+          <!-- Map placeholder with styled roads -->
+          <div style="margin:0 16px; height:260px; background:linear-gradient(180deg,#1a2035 0%,#1e2840 100%); border-radius:12px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.08);">
+            <!-- Grid roads -->
+            <div style="position:absolute;top:0;left:0;right:0;bottom:0;">
+              <!-- Horizontal roads -->
+              <div style="position:absolute;top:30%;left:0;right:0;height:6px;background:rgba(255,255,255,0.12);"></div>
+              <div style="position:absolute;top:60%;left:0;right:0;height:10px;background:rgba(255,255,255,0.18);"></div>
+              <!-- Vertical roads -->
+              <div style="position:absolute;left:25%;top:0;bottom:0;width:6px;background:rgba(255,255,255,0.12);"></div>
+              <div style="position:absolute;left:60%;top:0;bottom:0;width:10px;background:rgba(255,255,255,0.18);"></div>
+              <!-- AR route line -->
+              <div style="position:absolute;top:28%;left:26%;width:35%;height:4px;background:var(--accent);border-radius:2px;box-shadow:0 0 8px var(--accent);"></div>
+              <div style="position:absolute;top:28%;left:61%;width:4px;height:32%;background:var(--accent);border-radius:2px;box-shadow:0 0 8px var(--accent);"></div>
+              <!-- Current location dot -->
+              <div style="position:absolute;top:26%;left:24%;width:14px;height:14px;background:var(--accent);border-radius:50%;border:2px solid white;box-shadow:0 0 12px var(--accent);"></div>
+              <!-- Destination pin -->
+              <div style="position:absolute;top:56%;left:60%;font-size:20px;">📍</div>
+              <!-- Block fills -->
+              <div style="position:absolute;top:0;left:0;width:24%;height:29%;background:rgba(40,50,70,0.6);border-radius:2px;"></div>
+              <div style="position:absolute;top:0;left:27%;width:32%;height:29%;background:rgba(40,50,70,0.6);border-radius:2px;"></div>
+              <div style="position:absolute;top:32%;left:0;width:24%;height:27%;background:rgba(40,50,70,0.6);border-radius:2px;"></div>
+              <div style="position:absolute;top:63%;left:0;width:24%;height:37%;background:rgba(40,50,70,0.6);border-radius:2px;"></div>
+              <div style="position:absolute;top:63%;left:27%;width:32%;height:37%;background:rgba(40,50,70,0.6);border-radius:2px;"></div>
+              <div style="position:absolute;top:0;left:64%;right:0;height:55%;background:rgba(40,50,70,0.6);border-radius:2px;"></div>
+            </div>
+            <!-- ETA card -->
+            <div style="position:absolute;bottom:10px;left:10px;right:10px;background:rgba(10,10,20,0.85);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:14px;font-weight:700;">University of Queensland</div>
+                <div style="font-size:11px;color:var(--accent);">↑ Via M3 Motorway</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:16px;font-weight:700;color:var(--success);">18 min</div>
+                <div style="font-size:10px;color:var(--text-dim);">7.4 km</div>
+              </div>
+            </div>
+          </div>
+          <!-- Recent places -->
+          <div class="recent-label">Saved Places</div>
+          <div class="place-row" onclick="switchFlow(0)">
+            <div class="place-icon">🏛</div>
+            <div class="place-info"><div class="place-name">University of Queensland</div><div class="place-sub">St Lucia · 7.4 km away</div></div>
+            <div class="big-btn" style="margin:0;padding:6px 12px;font-size:12px;border-radius:8px;" onclick="switchFlow(0)">Go</div>
+          </div>
+          <div class="place-row">
+            <div class="place-icon">🏠</div>
+            <div class="place-info"><div class="place-name">Home</div><div class="place-sub">Saved · 3.1 km away</div></div>
+            <div class="big-btn" style="margin:0;padding:6px 12px;font-size:12px;border-radius:8px;">Go</div>
+          </div>
+          <div class="app-bottom-nav">
+            <div class="bottom-tab" onclick="showSpecial('home')"><span class="bottom-tab-icon">🏠</span>Home</div>
+            <div class="bottom-tab active" onclick="showSpecial('map')"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab" onclick="showSpecial('settings')"><span class="bottom-tab-icon">⚙️</span>Settings</div>
+          </div>
+        </div>
+      </div>`;
+  } else if (mode === 'settings') {
+    html = `
+      <div class="phone-device">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-bar"><span>9:41</span><span>⚙ Settings</span><span>100%</span></div>
+          <div class="screen-title-bar"><div class="screen-title">Settings</div></div>
+          <div style="padding:8px 16px 4px; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); font-weight:600;">Glasses</div>
+          <div class="settings-row">
+            <div><div class="settings-label">👓 NaviGlasses</div><div class="settings-sub" style="color:var(--success);">Connected · Battery 94%</div></div>
+            <div style="font-size:12px;color:var(--success);">●</div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">🔆 HUD Brightness</div><div class="settings-sub">Auto-adjust to ambient light</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">🔊 Spatial Audio</div><div class="settings-sub">Directional turn sounds</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div style="padding:8px 16px 4px; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); font-weight:600; margin-top:4px;">Drive Mode</div>
+          <div class="settings-row">
+            <div><div class="settings-label">🔕 Filter Notifications</div><div class="settings-sub">Auto-block above 10 km/h</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">📞 Allow Calls</div><div class="settings-sub">Show caller ID in HUD</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">💬 Queue Messages</div><div class="settings-sub">Deliver after trip ends</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div style="padding:8px 16px 4px; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); font-weight:600; margin-top:4px;">Navigation</div>
+          <div class="settings-row">
+            <div><div class="settings-label">🛣 Lane Guidance</div><div class="settings-sub">Proactive lane alerts on highways</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">🚦 Traffic Light Timer</div><div class="settings-sub">Show countdown overlay</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">🏙 CBD Depth Mode</div><div class="settings-sub">Detect overlapping road levels</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">〰 Haptic Turns</div><div class="settings-sub">Vibrate glasses arms on turns</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div style="padding:8px 16px 4px; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); font-weight:600; margin-top:4px;">Mode</div>
+          <div class="settings-row">
+            <div><div class="settings-label">🚲 Cyclist Mode</div><div class="settings-sub">Peripheral arrows + haptic cues</div></div>
+            <div class="toggle off"></div>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">🚗 Driver Mode</div><div class="settings-sub">Full HUD + lane guidance</div></div>
+            <div class="toggle"></div>
+          </div>
+          <div style="height:60px;"></div>
+          <div class="app-bottom-nav">
+            <div class="bottom-tab" onclick="showSpecial('home')"><span class="bottom-tab-icon">🏠</span>Home</div>
+            <div class="bottom-tab" onclick="showSpecial('map')"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab active" onclick="showSpecial('settings')"><span class="bottom-tab-icon">⚙️</span>Settings</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  container.innerHTML = html;
+
+  // Flow buttons — show task flows as quick links
+  document.getElementById('flow-btns').innerHTML = `
+    <div style="font-size:11px;color:var(--text-dim);padding:0 4px;align-self:center;">Jump to flow:</div>
+    ${flows.map((f,i) => `<div class="flow-btn" onclick="switchFlow(${i})">TF${i+1}</div>`).join('')}
+  `;
+
+  // Annotations
+  const annMap = {
+    home: [
+      {tag: 'HOME SCREEN', text: 'Landing screen showing glasses connection status, quick-start links to all 5 task flows, and bottom nav.'},
+      {tag: 'HCI: Visibility', text: 'Connection status shown immediately — user knows glasses are ready before starting navigation.', hci: true}
+    ],
+    map: [
+      {tag: 'MAP VIEW', text: 'Visual map with AR route overlaid in blue. Shows current location, destination pin, and ETA card.'},
+      {tag: 'US01', text: 'Route previewed on companion app before transferring to AR HUD on glasses.'},
+      {tag: 'HCI: Feedback', text: 'Live ETA and distance shown before user starts driving — sets expectations.', hci: true}
+    ],
+    settings: [
+      {tag: 'SETTINGS', text: 'Full settings panel covering glasses hardware, drive mode rules, navigation features, and user mode (driver vs cyclist).'},
+      {tag: 'US07', text: 'Notification filtering settings directly support the drive mode task flow.'},
+      {tag: 'US08', text: 'Cyclist mode toggle switches haptic + peripheral navigation on/off.'},
+      {tag: 'HCI: User Control', text: 'All features are individually togglable — user has full control of system behaviour.', hci: true}
+    ]
+  };
+  document.getElementById('annotations').innerHTML = `
+    ${annMap[mode].map(a => `
+      <div class="ann-card">
+        <div class="ann-tag">${a.tag}</div>
+        <div class="ann-text">${a.text}</div>
+        ${a.hci ? '<div class="hci-tag">HCI Principle</div>' : ''}
+      </div>
+    `).join('')}
+  `;
+}
 
 function switchFlow(idx) {
+  specialMode = null;
   currentFlow = idx;
   currentScreen = 0;
-  document.querySelectorAll('.nav-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.nav-tab').forEach((t, i) => t.classList.toggle('active', i === idx + 1));
   render();
 }
 
@@ -1746,8 +2073,8 @@ function render() {
   `;
 }
 
-// Init
-render();
+// Init — show home screen first
+showSpecial('home');
 </script>
 </body>
 </html>
