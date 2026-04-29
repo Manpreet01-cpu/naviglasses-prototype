@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NaviGlasses — Medium-Fidelity Prototype</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0a0a12;
+  --surface: #12121e;
+  --surface2: #1a1a2e;
+  --border: rgba(255,255,255,0.08);
+  --accent: #00d4ff;
+  --accent2: #7c3aed;
+  --success: #00e676;
+  --warning: #ffd600;
+  --danger: #ff3d57;
+  --text: #f0f0f8;
+  --text-dim: rgba(240,240,248,0.5);
+  --hud-blue: #00aaff;
+  --glass-bg: rgba(0,180,255,0.06);
+  --glass-border: rgba(0,180,255,0.25);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo span {
+  font-weight: 300;
+  opacity: 0.7;
+}
+
+.header-badge {
+  font-size: 11px;
+  background: var(--accent2);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Navigation tabs */
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 12px 24px 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.nav-tab {
+  padding: 8px 16px;
+  border-radius: 8px 8px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-dim);
+  border: 1px solid transparent;
+  border-bottom: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+  background: transparent;
+}
+
+.nav-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+
+.nav-tab.active {
+  color: var(--accent);
+  background: var(--bg);
+  border-color: var(--border);
+  border-bottom: 1px solid var(--bg);
+}
+
+/* Main content area */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Left sidebar - screen list */
+.sidebar {
+  width: 200px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 16px 16px 8px;
+}
+
+.screen-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-dim);
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.screen-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.screen-item.active {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: rgba(0,212,255,0.06);
+}
+
+.screen-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--accent2);
+  min-width: 18px;
+}
+
+/* Center — device preview */
+.preview-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 30px 20px;
+  overflow-y: auto;
+  gap: 20px;
+}
+
+.device-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: -10px;
+}
+
+/* Phone device frame */
+.phone-device {
+  width: 280px;
+  background: #111;
+  border-radius: 40px;
+  padding: 14px;
+  box-shadow: 0 0 0 2px #333, 0 0 0 4px #1a1a1a, 0 30px 80px rgba(0,0,0,0.8);
+  position: relative;
+}
+
+.phone-notch {
+  width: 90px;
+  height: 24px;
+  background: #111;
+  border-radius: 0 0 16px 16px;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.phone-notch::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #222;
+}
+
+.phone-screen {
+  background: var(--surface2);
+  border-radius: 28px;
+  overflow: hidden;
+  min-height: 520px;
+  position: relative;
+}
+
+/* Glasses HUD device frame */
+.hud-device {
+  width: 340px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  padding: 16px;
+  box-shadow: 0 0 40px rgba(0,180,255,0.1), 0 30px 80px rgba(0,0,0,0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.hud-device::before {
+  content: 'AR GLASSES VIEW';
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: rgba(0,180,255,0.4);
+  font-family: 'DM Mono', monospace;
+}
+
+.hud-viewfinder {
+  border: 1px solid rgba(0,180,255,0.2);
+  border-radius: 50% / 30%;
+  padding: 24px 16px 16px;
+  min-height: 380px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(0,20,40,0.9) 0%, rgba(0,10,20,0.95) 100%);
+}
+
+/* Road background for HUD */
+.hud-road-bg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 180px;
+  background: linear-gradient(180deg,
+    rgba(30,30,40,0) 0%,
+    rgba(40,40,50,0.6) 40%,
+    rgba(50,50,60,0.9) 100%
+  );
+}
+
+.hud-road-lines {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 20px;
+}
+
+.road-dash {
+  width: 4px;
+  height: 16px;
+  background: rgba(255,255,200,0.4);
+  border-radius: 2px;
+}
+
+/* Right panel — annotations */
+.annotations-panel {
+  width: 260px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: 20px;
+}
+
+.ann-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+}
+
+.ann-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.ann-tag {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.ann-text {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.hci-tag {
+  display: inline-block;
+  font-size: 10px;
+  background: rgba(124,58,237,0.2);
+  color: #a78bfa;
+  border: 1px solid rgba(124,58,237,0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 6px;
+}
+
+/* Screen content templates */
+.screen-content { display: none; width: 100%; height: 100%; }
+.screen-content.visible { display: block; }
+
+/* Shared UI elements */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px 4px;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: rgba(255,255,255,0.6);
+}
+
+.screen-title-bar {
+  padding: 12px 16px 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.screen-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.back-btn {
+  color: var(--accent);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.search-box {
+  margin: 12px 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+}
+
+.search-icon { font-size: 16px; }
+
+.recent-label {
+  padding: 8px 16px 4px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.place-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.place-row:hover { background: rgba(255,255,255,0.04); }
+
+.place-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.place-info { flex: 1; }
+.place-name { font-size: 14px; font-weight: 500; }
+.place-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.place-dist { font-size: 12px; color: var(--text-dim); }
+
+.big-btn {
+  margin: 12px 16px;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--accent), #0088cc);
+  border-radius: 14px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  color: white;
+  transition: opacity 0.2s;
+}
+
+.big-btn:hover { opacity: 0.85; }
+
+.big-btn.outline {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text);
+}
+
+/* HUD screen elements */
+.hud-top-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px;
+  position: relative;
+  z-index: 2;
+}
+
+.hud-eta {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 6px 10px;
+  text-align: center;
+}
+
+.hud-eta-time { font-size: 18px; font-weight: 700; color: white; }
+.hud-eta-label { font-size: 9px; color: rgba(255,255,255,0.5); }
+
+.hud-direction-big {
+  text-align: center;
+  margin: 20px 0 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.hud-arrow-icon {
+  font-size: 56px;
+  line-height: 1;
+  filter: drop-shadow(0 0 20px var(--hud-blue));
+}
+
+.hud-street-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 0 20px rgba(0,180,255,0.5);
+}
+
+.hud-dist {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  margin-top: 4px;
+}
+
+.ar-blue-line {
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--hud-blue) 0, var(--hud-blue) 12px, transparent 12px, transparent 20px);
+  margin: 8px 10px;
+  border-radius: 2px;
+  filter: drop-shadow(0 0 6px var(--hud-blue));
+  position: relative;
+  z-index: 2;
+}
+
+.hud-status-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.hud-status-pill {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dot-green { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+.dot-yellow { width: 6px; height: 6px; border-radius: 50%; background: var(--warning); }
+.dot-blue { width: 6px; height: 6px; border-radius: 50%; background: var(--hud-blue); }
+
+/* Lane guidance */
+.lane-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.lane-item {
+  flex: 1;
+  max-width: 70px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 8px 4px;
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+}
+
+.lane-item.correct {
+  background: rgba(0,230,118,0.15);
+  border-color: var(--success);
+  color: var(--success);
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(0,230,118,0.2);
+}
+
+.lane-item.danger {
+  background: rgba(255,61,87,0.1);
+  border-color: rgba(255,61,87,0.4);
+  color: rgba(255,61,87,0.7);
+}
+
+.lane-label { font-size: 9px; margin-top: 3px; opacity: 0.7; }
+
+/* Traffic light */
+.traffic-light-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+  z-index: 2;
+  margin: 8px auto;
+}
+
+.tl { width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+.tl.red { background: #ff3d57; box-shadow: 0 0 10px #ff3d57; }
+.tl.yellow { background: #ffd600; box-shadow: 0 0 10px #ffd600; }
+.tl.green { background: #00e676; box-shadow: 0 0 10px #00e676; }
+
+.countdown-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--warning);
+  font-family: 'DM Mono', monospace;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Notification */
+.notif-banner {
+  margin: 8px 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.notif-banner.silenced {
+  opacity: 0.35;
+  text-decoration: line-through;
+  border-style: dashed;
+}
+
+.notif-icon { font-size: 18px; }
+.notif-text { flex: 1; }
+.notif-name { font-weight: 600; }
+.notif-msg { font-size: 11px; color: var(--text-dim); }
+
+/* Arrival screen */
+.arrival-screen {
+  text-align: center;
+  padding: 30px 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.arrival-check {
+  font-size: 56px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 20px var(--success));
+}
+
+.arrival-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 6px;
+}
+
+.arrival-sub { font-size: 13px; color: var(--text-dim); }
+
+/* Depth dimmer effect */
+.depth-layer {
+  position: relative;
+  z-index: 2;
+  margin: 8px 10px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.depth-lower {
+  background: rgba(50,50,60,0.4);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 6px 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.depth-target {
+  background: rgba(0,100,200,0.25);
+  border: 1px solid var(--hud-blue);
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--hud-blue);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 0 16px rgba(0,170,255,0.2);
+}
+
+.floating-pin {
+  background: rgba(0,230,118,0.12);
+  border: 1px solid var(--success);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: var(--success);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.warning-overlay {
+  background: rgba(255,61,87,0.12);
+  border: 1px solid rgba(255,61,87,0.4);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #ff8a95;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 10px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Settings screen */
+.settings-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  gap: 12px;
+}
+
+.settings-label { flex: 1; font-size: 14px; }
+.settings-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+.toggle {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--accent);
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+  top: 3px;
+  right: 3px;
+  transition: right 0.2s;
+}
+
+.toggle.off { background: rgba(255,255,255,0.15); }
+.toggle.off::after { right: auto; left: 3px; }
+
+/* Haptic indicator */
+.haptic-indicator {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin: 10px;
+  padding: 10px;
+  border: 1px dashed rgba(0,212,255,0.3);
+  border-radius: 10px;
+}
+
+.haptic-icon { font-size: 28px; }
+.haptic-text { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+/* Companion app tabs */
+.app-bottom-nav {
+  display: flex;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 8px 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface2);
+}
+
+.bottom-tab {
+  flex: 1;
+  text-align: center;
+  font-size: 9px;
+  color: var(--text-dim);
+  padding: 4px;
+  cursor: pointer;
+}
+
+.bottom-tab.active { color: var(--accent); }
+.bottom-tab-icon { font-size: 18px; display: block; margin-bottom: 2px; }
+
+/* Trip summary */
+.summary-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.summary-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.summary-icon.green { background: rgba(0,230,118,0.12); }
+.summary-icon.blue { background: rgba(0,212,255,0.12); }
+.summary-icon.yellow { background: rgba(255,214,0,0.12); }
+
+/* Cyclist peripheral HUD */
+.peripheral-arrow {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(0,180,255,0.3);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  z-index: 3;
+  filter: drop-shadow(0 0 10px var(--hud-blue));
+}
+
+.meter-countdown {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  margin: 12px;
+}
+
+.meter-num {
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--hud-blue);
+  font-family: 'DM Mono', monospace;
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(0,180,255,0.6);
+}
+
+.meter-unit { font-size: 14px; color: var(--text-dim); }
+
+/* Navigation flow buttons */
+.nav-flow-btns {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.flow-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  background: var(--surface2);
+  transition: all 0.15s;
+}
+
+.flow-btn:hover, .flow-btn.active-step {
+  background: rgba(0,212,255,0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Scroll containers */
+.screen-scroll {
+  overflow-y: auto;
+  max-height: 460px;
+  padding-bottom: 60px;
+}
+</style>
+</head>
+<body>
+
+<!-- App Header -->
+<div class="app-header">
+  <div class="logo">Navi<span>Glasses</span></div>
+  <div class="header-badge">Mid-Fi Prototype</div>
+  <div style="font-size:12px; color:var(--text-dim);">DECO2500/7250 · Team Navigation</div>
+  <div class="header-right">
+    <div style="font-size:11px; color:var(--text-dim);">5 Task Flows</div>
+  </div>
+</div>
+
+<!-- Navigation Tabs -->
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="switchFlow(0)">TF1: AR Navigation</div>
+  <div class="nav-tab" onclick="switchFlow(1)">TF2: Lane Guidance</div>
+  <div class="nav-tab" onclick="switchFlow(2)">TF3: Cyclist Mode</div>
+  <div class="nav-tab" onclick="switchFlow(3)">TF4: CBD Overlap</div>
+  <div class="nav-tab" onclick="switchFlow(4)">TF5: Notifications</div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-title" id="sidebar-title">Screens</div>
+    <div id="screen-list"></div>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview-area">
+    <div class="device-label" id="device-label">📱 Companion App</div>
+    <div id="device-container"></div>
+    <!-- Flow nav buttons -->
+    <div class="nav-flow-btns" id="flow-btns"></div>
+  </div>
+
+  <!-- Annotations -->
+  <div class="annotations-panel">
+    <div class="ann-title">Annotations</div>
+    <div id="annotations"></div>
+  </div>
+
+</div>
+
+<script>
+// ===================== DATA =====================
+const flows = [
+  {
+    name: "TF1: AR Navigation",
+    userStory: "US01 — Vehicle user wants an easier visual map without looking away from road.",
+    screens: [
+      {
+        id: "tf1-1", label: "Destination Search", device: "phone",
+        annotations: [
+          {tag: "US01", text: "User searches or speaks destination. Familiar search metaphor reduces learning curve."},
+          {tag: "HCI: Learnability", text: "Search interface mirrors Google Maps mental model — recognition over recall.", hci: true}
+        ],
+        render: () => `
+          <div class="status-bar"><span>9:41</span><span>⚡ NaviGlasses</span><span>100%</span></div>
+          <div class="screen-title-bar">
+            <div class="screen-title">Where to?</div>
+          </div>
+          <div class="search-box" onclick="nextStep()">
+            <span class="search-icon">🔍</span>
+            <span>Search destination…</span>
+          </div>
+          <div class="recent-label">Recent</div>
+          <div class="place-row" onclick="nextStep()">
+            <div class="place-icon">🏛</div>
+            <div class="place-info">
+              <div class="place-name">University of Queensland</div>
+              <div class="place-sub">St Lucia · UQ Campus</div>
+            </div>
+            <div class="place-dist">7.4 km</div>
+          </div>
+          <div class="place-row">
+            <div class="place-icon">🏠</div>
+            <div class="place-info"><div class="place-name">Home</div><div class="place-sub">Saved location</div></div>
+            <div class="place-dist">3.1 km</div>
+          </div>
+          <div class="place-row">
+            <div class="place-icon">💼</div>
+            <div class="place-info"><div class="place-name">Work — CBD</div><div class="place-sub">Brisbane City</div></div>
+            <div class="place-dist">12.8 km</div>
+          </div>
+          <div class="app-bottom-nav">
+            <div class="bottom-tab active"><span class="bottom-tab-icon">🔍</span>Search</div>
+            <div class="bottom-tab"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab"><span class="bottom-tab-icon">⚙️</span>Settings</div>
+          </div>
+        `
+      },
+      {
+        id: "tf1-2", label: "Voice Activation", device: "phone",
+        annotations: [
+          {tag: "US01", text: "Hands-free voice command while putting on glasses. No need to hold phone."},
+          {tag: "HCI: Flexibility", text: "Supports both touch and voice input — accommodates different driving contexts.", hci: true}
+        ],
+        render: () => `
+          <div class="status-bar"><span>9:41</span><span>🎙 Listening</span><span>100%</span></div>
+          <div style="text-align:center; padding: 40px 20px 20px;">
+            <div style="font-size:56px; margin-bottom:16px; filter:drop-shadow(0 0 20px var(--accent));">🎙</div>
+            <div style="font-size:20px; font-weight:600; color:white; margin-bottom:8px;">Listening…</div>
+            <div style="font-size:14px; color:var(--text-dim); margin-bottom:24px;">"Navigate to UQ"</div>
+            <div style="display:flex; justify-content:center; gap:4px; margin-bottom:24px;">
+              ${[3,6,8,5,9,4,7,3,6].map(h => `<div style="width:4px;height:${h*3}px;background:var(--accent);border-radius:2px;opacity:0.8;"></div>`).join('')}
+            </div>
+            <div style="background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:12px;padding:14px;font-size:13px;color:var(--text-dim);">
+              📍 University of Queensland<br>
+              <span style="color:var(--success);">Route found: 18 min via M3</span>
+            </div>
+          </div>
+          <div class="big-btn" onclick="nextStep()">Start AR Navigation</div>
+        `
+      },
+      {
+        id: "tf1-3", label: "HUD Active — Straight", device: "hud",
+        annotations: [
+          {tag: "US01", text: "AR blue line painted on road surface at eye level. Driver's gaze stays on road."},
+          {tag: "HCI: Safety", text: "Reduces eyes-off-road time to zero. Info exists where eyes already look.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-eta"><div class="hud-eta-time">18</div><div class="hud-eta-label">min ETA</div></div>
+            <div class="hud-eta"><div class="hud-eta-time">7.4</div><div class="hud-eta-label">km left</div></div>
+          </div>
+          <div class="hud-direction-big">
+            <div class="hud-arrow-icon">↑</div>
+            <div class="hud-street-name">Coronation Drive</div>
+            <div class="hud-dist">Continue 1.2 km</div>
+          </div>
+          <div class="ar-blue-line"></div>
+          <div class="ar-blue-line" style="margin-top:2px;opacity:0.5;"></div>
+          <div class="hud-status-row">
+            <div class="hud-status-pill"><div class="dot-green"></div> GPS lock</div>
+            <div class="hud-status-pill"><div class="dot-blue"></div> HUD active</div>
+            <div class="hud-status-pill">65 km/h</div>
+          </div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf1-4", label: "Turn Alert", device: "hud",
+        annotations: [
+          {tag: "US01", text: "Flashing turn arrow pinned to actual building corner. Both visual + haptic cue."},
+          {tag: "HCI: Redundancy", text: "Multi-modal cue (visual arrow + haptic vibration) prevents missed turns.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-eta"><div class="hud-eta-time">12</div><div class="hud-eta-label">min ETA</div></div>
+            <div class="hud-status-pill" style="border-color:var(--warning);"><div class="dot-yellow"></div> TURN SOON</div>
+          </div>
+          <div class="hud-direction-big">
+            <div class="hud-arrow-icon" style="color:var(--warning);filter:drop-shadow(0 0 20px var(--warning));">←</div>
+            <div class="hud-street-name" style="color:var(--warning);">Turn LEFT</div>
+            <div class="hud-dist" style="color:var(--warning);">in 80 m</div>
+          </div>
+          <div class="ar-blue-line" style="background:repeating-linear-gradient(90deg,var(--warning) 0,var(--warning) 12px,transparent 12px,transparent 20px);"></div>
+          <div class="haptic-indicator">
+            <div class="haptic-icon">〰</div>
+            <div class="haptic-text">Left arm vibrating — haptic alert</div>
+          </div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf1-5", label: "Notification Filtered", device: "hud",
+        annotations: [
+          {tag: "US07", text: "Notification auto-silenced while driving >10km/h. Map never obscured."},
+          {tag: "HCI: Interruption Prevention", text: "Non-essential pings queued to background. Only a grey dot appears in periphery.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-eta"><div class="hud-eta-time">10</div><div class="hud-eta-label">min ETA</div></div>
+            <div class="hud-status-pill"><div class="dot-green"></div> 70 km/h</div>
+          </div>
+          <div class="hud-direction-big" style="margin-top:10px;">
+            <div class="hud-arrow-icon">↑</div>
+            <div class="hud-street-name">M3 Motorway</div>
+            <div class="hud-dist">Continue 3.4 km</div>
+          </div>
+          <div class="ar-blue-line"></div>
+          <div class="notif-banner silenced">
+            <span class="notif-icon">📱</span>
+            <div class="notif-text">
+              <div class="notif-name">Dad</div>
+              <div class="notif-msg">Auto-silenced — speed > 10km/h</div>
+            </div>
+            <span style="font-size:10px;color:var(--text-dim);">Queued</span>
+          </div>
+          <div style="text-align:right;padding:0 12px;font-size:10px;color:var(--text-dim);">· 1 unread</div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf1-6", label: "Arrival", device: "hud",
+        annotations: [
+          {tag: "US01", text: "Green anchor pin appears on physical building in AR view. Clear success state."},
+          {tag: "HCI: Visibility of System Status", text: "User immediately knows they've arrived — no ambiguity.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill" style="border-color:var(--success);"><div class="dot-green"></div> Arrived</div>
+          </div>
+          <div class="arrival-screen">
+            <div class="arrival-check">📍</div>
+            <div style="font-size:48px;filter:drop-shadow(0 0 20px var(--success));">✓</div>
+            <div class="arrival-title">You've Arrived!</div>
+            <div class="arrival-sub">University of Queensland<br>St Lucia Campus</div>
+            <div style="margin-top:12px;font-size:11px;color:var(--text-dim);">AR overlay cleared · Drive safely</div>
+          </div>
+          <div class="hud-road-bg"></div>
+        `
+      }
+    ]
+  },
+  {
+    name: "TF2: Lane Guidance",
+    userStory: "US04 — Driver in complex environments wants proactive lane-level guidance to avoid missing exits.",
+    screens: [
+      {
+        id: "tf2-1", label: "Proactive Lane Alert", device: "hud",
+        annotations: [
+          {tag: "US04", text: "Lane guidance shown 2km before exit — not at the last moment like standard GPS."},
+          {tag: "HCI: Error Prevention", text: "Early alert prevents the 'late dangerous merge' scenario from research findings.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-eta"><div class="hud-eta-time">Exit</div><div class="hud-eta-label">2.0 km</div></div>
+            <div class="hud-status-pill" style="border-color:var(--success);color:var(--success);">Lane alert</div>
+          </div>
+          <div class="hud-direction-big" style="margin-top:8px;">
+            <div style="font-size:14px;color:var(--success);font-weight:700;margin-bottom:8px;">GET IN THIS LANE NOW</div>
+          </div>
+          <div class="lane-row">
+            <div class="lane-item"><div>L1</div><div class="lane-label">ok</div></div>
+            <div class="lane-item correct"><div>✓ L2</div><div class="lane-label">YOUR LANE</div></div>
+            <div class="lane-item"><div>L3</div><div class="lane-label">ok</div></div>
+          </div>
+          <div class="ar-blue-line"></div>
+          <div class="hud-status-row">
+            <div class="hud-status-pill"><div class="dot-green"></div> 100 km/h</div>
+            <div class="hud-status-pill">Lane data live</div>
+          </div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf2-2", label: "Lane Glow + Danger", device: "hud",
+        annotations: [
+          {tag: "US04", text: "Correct lane glows green; exit-only trap lane shown in red. No interpretation needed."},
+          {tag: "HCI: Recognition not Recall", text: "System tells user which lane — they don't need to read a map and interpret.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-eta"><div class="hud-eta-time">Exit</div><div class="hud-eta-label">800 m</div></div>
+          </div>
+          <div class="lane-row" style="margin-top:16px;">
+            <div class="lane-item danger"><div>L1</div><div class="lane-label">EXIT ONLY ⚠</div></div>
+            <div class="lane-item correct"><div>✓ L2</div><div class="lane-label">SAFE MERGE</div></div>
+            <div class="lane-item"><div>L3</div></div>
+          </div>
+          <div style="text-align:center;font-size:11px;color:var(--success);font-weight:700;margin:4px 0;position:relative;z-index:2;">Lane glows green in AR ↑</div>
+          <div class="ar-blue-line"></div>
+          <div class="hud-status-row">
+            <div class="hud-status-pill"><div class="dot-green"></div> On track</div>
+            <div class="hud-status-pill"><div class="dot-blue"></div> 95 km/h</div>
+          </div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf2-3", label: "Traffic Light Timer", device: "hud",
+        annotations: [
+          {tag: "US05", text: "Traffic light countdown lets driver plan speed for safe merge window."},
+          {tag: "HCI: Anticipation", text: "Real-time infrastructure data eliminates guessing — supports US05 exactly.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-eta"><div class="hud-eta-time">Exit</div><div class="hud-eta-label">400 m</div></div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:20px;padding:8px;position:relative;z-index:2;">
+            <div class="traffic-light-wrap">
+              <div class="tl red"></div>
+              <div class="tl yellow"></div>
+              <div class="tl"></div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;">Light turns green in</div>
+              <div class="countdown-num">18s</div>
+              <div style="font-size:11px;color:var(--text-dim);">Slow to merge safely</div>
+            </div>
+          </div>
+          <div class="lane-row">
+            <div class="lane-item danger"><div>L1</div><div class="lane-label">EXIT ONLY</div></div>
+            <div class="lane-item correct"><div>✓ L2</div></div>
+            <div class="lane-item"><div>L3</div></div>
+          </div>
+          <div class="ar-blue-line"></div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf2-4", label: "Safe Merge Confirmed", device: "hud",
+        annotations: [
+          {tag: "US04", text: "Subtle visual confirmation that user is now in the correct lane for exit."},
+          {tag: "HCI: Feedback", text: "Timely positive feedback reduces anxiety of unfamiliar highway exits.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill" style="border-color:var(--success);color:var(--success);">✓ Safe merge!</div>
+            <div class="hud-eta"><div class="hud-eta-time">Exit</div><div class="hud-eta-label">200 m</div></div>
+          </div>
+          <div class="hud-direction-big" style="margin-top:12px;">
+            <div class="hud-arrow-icon" style="font-size:40px;color:var(--success);filter:drop-shadow(0 0 20px var(--success));">✓</div>
+            <div class="hud-street-name" style="color:var(--success);">Correct lane</div>
+            <div class="hud-dist">Exit ramp in 200m</div>
+          </div>
+          <div class="lane-row">
+            <div class="lane-item"><div>L1</div></div>
+            <div class="lane-item correct" style="border-color:var(--success);"><div>YOU</div><div class="lane-label">CORRECT ✓</div></div>
+            <div class="lane-item"><div>L3</div></div>
+          </div>
+          <div class="ar-blue-line"></div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      }
+    ]
+  },
+  {
+    name: "TF3: Cyclist Mode",
+    userStory: "US08 — Cyclist wants navigation via wearable so they never need to stop to check phone.",
+    screens: [
+      {
+        id: "tf3-1", label: "Pair & Set Route", device: "phone",
+        annotations: [
+          {tag: "US08", text: "Cyclist mode selected. Route set from phone once, then glasses take over."},
+          {tag: "HCI: Minimal Setup", text: "One-time setup — glasses handle all navigation hands-free from this point.", hci: true}
+        ],
+        render: () => `
+          <div class="status-bar"><span>9:41</span><span>🚲 Cyclist Mode</span><span>100%</span></div>
+          <div class="screen-title-bar"><div class="screen-title">Plan Your Ride</div></div>
+          <div style="margin:12px 16px;padding:12px;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:12px;display:flex;align-items:center;gap:10px;">
+            <div style="font-size:24px;">👓</div>
+            <div>
+              <div style="font-size:13px;font-weight:600;">NaviGlasses paired</div>
+              <div style="font-size:11px;color:var(--success);">✓ Connected · Battery 94%</div>
+            </div>
+          </div>
+          <div class="place-row" onclick="nextStep()">
+            <div class="place-icon">🏫</div>
+            <div class="place-info"><div class="place-name">UQ St Lucia</div><div class="place-sub">University of Queensland</div></div>
+            <div class="place-dist">7.4 km</div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">🚲 Cyclist Mode</div>
+              <div class="settings-sub">Haptic turns · peripheral arrows</div>
+            </div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">🔊 Audio Cues</div>
+              <div class="settings-sub">Spatial audio directions</div>
+            </div>
+            <div class="toggle"></div>
+          </div>
+          <div class="big-btn" onclick="nextStep()">Start Ride on Glasses</div>
+          <div class="app-bottom-nav">
+            <div class="bottom-tab active"><span class="bottom-tab-icon">🚲</span>Ride</div>
+            <div class="bottom-tab"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab"><span class="bottom-tab-icon">⚙️</span>Settings</div>
+          </div>
+        `
+      },
+      {
+        id: "tf3-2", label: "Peripheral Compass HUD", device: "hud",
+        annotations: [
+          {tag: "US08", text: "Subtle compass HUD in lower peripheral vision. Non-intrusive while riding."},
+          {tag: "HCI: Minimal Distraction", text: "Low-brightness peripheral display — visible when needed, not demanding attention.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill"><div class="dot-green"></div> Riding · 18 km/h</div>
+            <div class="hud-status-pill">Next: 800m</div>
+          </div>
+          <div class="hud-direction-big" style="margin-top:24px;">
+            <div style="font-size:13px;color:var(--text-dim);margin-bottom:6px;">Peripheral navigation active</div>
+            <div style="width:60px;height:60px;border:2px solid rgba(0,180,255,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:28px;">🧭</div>
+            <div style="font-size:13px;color:rgba(0,180,255,0.7);margin-top:8px;">↑ Continue 800m</div>
+          </div>
+          <div class="ar-blue-line" style="opacity:0.4;"></div>
+          <div style="text-align:center;font-size:10px;color:var(--text-dim);margin-top:4px;position:relative;z-index:2;">Low brightness · peripheral only</div>
+          <div class="peripheral-arrow">↑</div>
+          <div class="hud-road-bg"></div>
+        `
+      },
+      {
+        id: "tf3-3", label: "Haptic Turn Cue", device: "hud",
+        annotations: [
+          {tag: "US08", text: "Glass arm vibrates on left side when left turn is 50m away. No visual lookup needed."},
+          {tag: "HCI: Haptic Feedback", text: "Physical vibration = zero cognitive load. Cyclist keeps eyes on road completely.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill" style="border-color:var(--warning);color:var(--warning);">Haptic active</div>
+            <div class="hud-status-pill">50 m</div>
+          </div>
+          <div class="hud-direction-big" style="margin-top:16px;">
+            <div class="hud-arrow-icon" style="color:var(--warning);filter:drop-shadow(0 0 20px var(--warning));">←</div>
+            <div class="hud-street-name" style="color:var(--warning);">Turn LEFT</div>
+            <div class="hud-dist" style="color:var(--warning);">in 50 m</div>
+          </div>
+          <div class="haptic-indicator">
+            <div class="haptic-icon">〰〰</div>
+            <div class="haptic-text">Left arm of glasses vibrating</div>
+          </div>
+          <div class="ar-blue-line" style="background:repeating-linear-gradient(90deg,var(--warning) 0,var(--warning) 12px,transparent 12px,transparent 20px);"></div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf3-4", label: "3D Turn Icon on Street", device: "hud",
+        annotations: [
+          {tag: "US08", text: "3D turn icon 'pinned' to actual street corner in AR as cyclist approaches."},
+          {tag: "HCI: Spatial Anchoring", text: "Digital marker anchored to physical world removes map interpretation entirely.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill"><div class="dot-blue"></div> 10 m to turn</div>
+          </div>
+          <div class="hud-direction-big" style="margin-top:8px;">
+            <div style="font-size:36px;color:var(--hud-blue);filter:drop-shadow(0 0 16px var(--hud-blue));">↩</div>
+            <div style="font-size:13px;color:var(--hud-blue);margin-top:4px;">Turn icon on street corner</div>
+          </div>
+          <div class="floating-pin">📍 Turn here — Hawken Drive</div>
+          <div class="ar-blue-line"></div>
+          <div style="display:flex;justify-content:center;padding:4px;position:relative;z-index:2;">
+            <div class="hud-status-pill">Next: Staff Car Park · 200m</div>
+          </div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf3-5", label: "Auto-Reroute (Missed Turn)", device: "hud",
+        annotations: [
+          {tag: "US08", text: "If cyclist misses turn, system auto-reroutes without cyclist needing to stop."},
+          {tag: "HCI: Error Recovery", text: "Graceful failure — system recovers without user having to pull out phone.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill" style="border-color:var(--danger);color:var(--danger);">⚠ Rerouting</div>
+          </div>
+          <div class="hud-direction-big" style="margin-top:12px;">
+            <div style="font-size:36px;color:var(--danger);filter:drop-shadow(0 0 16px var(--danger));">↻</div>
+            <div class="hud-street-name" style="color:var(--danger);">Rerouting…</div>
+            <div class="hud-dist">Turn missed · new path found</div>
+          </div>
+          <div class="ar-blue-line" style="background:repeating-linear-gradient(90deg,var(--danger) 0,var(--danger) 8px,transparent 8px,transparent 16px);"></div>
+          <div style="text-align:center;font-size:11px;color:var(--text-dim);margin:4px 0;position:relative;z-index:2;">Breadcrumb trail to safe path</div>
+          <div class="ar-blue-line"></div>
+          <div class="hud-status-row">
+            <div class="hud-status-pill">No stopping needed ✓</div>
+          </div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      }
+    ]
+  },
+  {
+    name: "TF4: CBD Overlap",
+    userStory: "US06 — Navigator in high-density areas wants interface that distinguishes overlapping roads.",
+    screens: [
+      {
+        id: "tf4-1", label: "Depth-Layering Mode", device: "hud",
+        annotations: [
+          {tag: "US06", text: "Depth-Layering Mode activates when multiple road Z-levels detected (e.g. Brisbane CBD)."},
+          {tag: "HCI: Spatial Clarity", text: "Irrelevant lower road dimmed; target path highlighted neon blue — unambiguous.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill" style="border-color:var(--hud-blue);color:var(--hud-blue);">Depth Mode 🔵</div>
+          </div>
+          <div class="depth-layer" style="margin:12px 10px 6px;">
+            <div class="depth-lower">⬛ Lower road (dimmed) — Riverside Dr</div>
+            <div class="depth-target">🔵 YOUR PATH — Story Bridge Ramp</div>
+          </div>
+          <div style="text-align:center;font-size:10px;color:var(--text-dim);margin:4px 0;position:relative;z-index:2;">Lower road opacity reduced in AR view</div>
+          <div class="ar-blue-line"></div>
+          <div class="hud-status-row">
+            <div class="hud-status-pill"><div class="dot-blue"></div> Stacked roads detected</div>
+          </div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf4-2", label: "Floating Exit Pins", device: "hud",
+        annotations: [
+          {tag: "US06", text: "Digital signs anchored to physical exit pillars. Glancing at exit enlarges the pin label."},
+          {tag: "HCI: Affordance", text: "Pins attached to real-world objects — intuitive and unambiguous exit identification.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-eta"><div class="hud-eta-time">Exit</div><div class="hud-eta-label">300 m</div></div>
+          </div>
+          <div class="floating-pin" style="background:rgba(0,212,255,0.1);border-color:var(--accent);color:var(--accent);font-size:14px;padding:10px 14px;margin:12px 10px 6px;">
+            📌 Story Bridge — TAKE THIS EXIT →
+          </div>
+          <div class="floating-pin" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.25);font-size:11px;">
+            📌 Riverside Dr (lower) — not your route
+          </div>
+          <div class="ar-blue-line"></div>
+          <div style="text-align:center;font-size:10px;color:var(--text-dim);margin-top:4px;position:relative;z-index:2;">Glance at exit → pin enlarges</div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf4-3", label: "Metre Countdown", device: "hud",
+        annotations: [
+          {tag: "US06", text: "Metre-by-metre countdown projected on road surface to exact turn-off point."},
+          {tag: "HCI: Precision Feedback", text: "Eliminates spatial uncertainty — driver knows exactly when to turn.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill" style="border-color:var(--accent);">Precision mode</div>
+          </div>
+          <div class="meter-countdown" style="margin-top:16px;">
+            <div class="meter-num">47</div>
+            <div class="meter-unit">metres to turn-off</div>
+          </div>
+          <div class="floating-pin" style="background:rgba(0,212,255,0.12);border-color:var(--accent);color:var(--accent);">
+            📌 Story Bridge turn-off
+          </div>
+          <div class="ar-blue-line"></div>
+          <div style="text-align:center;font-size:10px;color:var(--text-dim);margin:4px;position:relative;z-index:2;">Countdown projected on road surface</div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf4-4", label: "Road Hazard Alert", device: "hud",
+        annotations: [
+          {tag: "US05", text: "Construction or accident icon projected exactly on road surface where hazard is."},
+          {tag: "HCI: Real-World Mapping", text: "Hazard appears at its physical location — no interpretation of map icons required.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill" style="border-color:var(--danger);color:var(--danger);">⚠ Hazard ahead</div>
+          </div>
+          <div class="warning-overlay" style="margin:12px 10px 6px;">
+            <span style="font-size:22px;">🚧</span>
+            <div>
+              <div style="font-weight:600;">Construction — 300m</div>
+              <div style="font-size:11px;opacity:0.8;">Hazard icon on road surface in AR</div>
+            </div>
+          </div>
+          <div class="depth-target" style="margin:6px 10px;">🔵 Alternative path highlighted</div>
+          <div class="ar-blue-line"></div>
+          <div class="hud-status-row">
+            <div class="hud-status-pill"><div class="dot-yellow"></div> Adjusting route</div>
+          </div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf4-5", label: "Confirmation + Clear", device: "hud",
+        annotations: [
+          {tag: "US06", text: "Once user takes correct ramp, depth-layering fades and normal HUD resumes."},
+          {tag: "HCI: Minimal Cognitive Load", text: "System clears itself after task completion — no lingering interface clutter.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill" style="border-color:var(--success);color:var(--success);">✓ Correct ramp!</div>
+          </div>
+          <div class="hud-direction-big" style="margin-top:16px;">
+            <div class="hud-arrow-icon" style="font-size:40px;color:var(--success);filter:drop-shadow(0 0 20px var(--success));">✓</div>
+            <div class="hud-street-name" style="color:var(--success);">Story Bridge ramp</div>
+            <div class="hud-dist">Depth mode fading…</div>
+          </div>
+          <div class="ar-blue-line"></div>
+          <div style="text-align:center;font-size:11px;color:var(--text-dim);margin:4px;position:relative;z-index:2;">FOV returning to normal transparency</div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      }
+    ]
+  },
+  {
+    name: "TF5: Notification Management",
+    userStory: "US07 — Mobile user wants navigation interface that filters non-essential notifications so map is never obscured.",
+    screens: [
+      {
+        id: "tf5-1", label: "Configure Rules", device: "phone",
+        annotations: [
+          {tag: "US07", text: "User configures which notifications are allowed during driving. Set once, then automatic."},
+          {tag: "HCI: User Control", text: "User has control over their notification rules rather than a one-size-fits-all block.", hci: true}
+        ],
+        render: () => `
+          <div class="status-bar"><span>9:41</span><span>⚙ Settings</span><span>100%</span></div>
+          <div class="screen-title-bar"><div class="screen-title">Drive Mode Settings</div></div>
+          <div style="padding:12px 16px;font-size:12px;color:var(--text-dim);background:rgba(0,212,255,0.05);border-bottom:1px solid var(--border);">Active while driving &gt; 10 km/h</div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">🔕 Drive Mode</div>
+              <div class="settings-sub">Auto-filter notifications while driving</div>
+            </div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">📞 Allow Calls</div>
+              <div class="settings-sub">Show caller ID in HUD periphery</div>
+            </div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">💬 Queue Messages</div>
+              <div class="settings-sub">Deliver after trip ends</div>
+            </div>
+            <div class="toggle"></div>
+          </div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-label">📱 Block Apps</div>
+              <div class="settings-sub">Instagram, Twitter, etc.</div>
+            </div>
+            <div class="toggle"></div>
+          </div>
+          <div class="big-btn" onclick="nextStep()">Save Settings</div>
+          <div class="app-bottom-nav">
+            <div class="bottom-tab"><span class="bottom-tab-icon">🔍</span>Search</div>
+            <div class="bottom-tab"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab active"><span class="bottom-tab-icon">⚙️</span>Settings</div>
+          </div>
+        `
+      },
+      {
+        id: "tf5-2", label: "Clean HUD (No Notifs)", device: "hud",
+        annotations: [
+          {tag: "US07", text: "During active navigation, map HUD is completely unobscured — no notifications visible."},
+          {tag: "HCI: Focus Mode", text: "Distraction-free view during critical driving. Only navigation data shown.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-eta"><div class="hud-eta-time">14</div><div class="hud-eta-label">min ETA</div></div>
+            <div class="hud-status-pill"><div class="dot-green"></div> 72 km/h</div>
+          </div>
+          <div class="hud-direction-big">
+            <div class="hud-arrow-icon">↑</div>
+            <div class="hud-street-name">Pacific Motorway</div>
+            <div class="hud-dist">Continue 4.5 km</div>
+          </div>
+          <div class="ar-blue-line"></div>
+          <div class="ar-blue-line" style="opacity:0.4;margin-top:2px;"></div>
+          <div class="hud-status-row">
+            <div class="hud-status-pill"><div class="dot-green"></div> Map unobstructed ✓</div>
+            <div class="hud-status-pill">🔕 Drive mode ON</div>
+          </div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf5-3", label: "Incoming Call (Gesture)", device: "hud",
+        annotations: [
+          {tag: "US07", text: "Call shown minimally in periphery. Mid-air gesture dismisses without touching device."},
+          {tag: "HCI: Gesture Interaction", text: "Hands-free gesture (swipe in air) aligned with 'The Smart Glass' metaphor from design.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-eta"><div class="hud-eta-time">11</div><div class="hud-eta-label">min ETA</div></div>
+          </div>
+          <div class="hud-direction-big" style="margin-top:8px;">
+            <div class="hud-arrow-icon">↑</div>
+            <div class="hud-street-name">Continue</div>
+          </div>
+          <div class="ar-blue-line"></div>
+          <div class="notif-banner" style="border-color:rgba(0,212,255,0.3);">
+            <span class="notif-icon">📞</span>
+            <div class="notif-text">
+              <div class="notif-name">Mum calling…</div>
+              <div class="notif-msg">👋 Swipe right to dismiss (gesture)</div>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:10px;color:var(--text-dim);position:relative;z-index:2;margin-top:4px;">Map remains visible behind call banner</div>
+          <div class="hud-road-bg"></div>
+          <div class="hud-road-lines">${[1,2,3,4,5].map(() => `<div class="road-dash"></div>`).join('')}</div>
+        `
+      },
+      {
+        id: "tf5-4", label: "Stopped — Notifs Released", device: "hud",
+        annotations: [
+          {tag: "US07", text: "When speed drops to 0, queued notifications are released and shown in HUD."},
+          {tag: "HCI: Context-Aware", text: "System detects stop automatically — no user action needed to see messages.", hci: true}
+        ],
+        render: () => `
+          <div class="hud-top-info">
+            <div class="hud-status-pill" style="border-color:var(--success);">Parked · 0 km/h</div>
+          </div>
+          <div style="text-align:center;font-size:12px;color:var(--text-dim);margin:8px 0;position:relative;z-index:2;">Queued notifications released:</div>
+          <div class="notif-banner" style="margin:6px 10px;">
+            <span class="notif-icon">💬</span>
+            <div class="notif-text">
+              <div class="notif-name">Dad — 3 messages</div>
+              <div class="notif-msg">Received during drive</div>
+            </div>
+          </div>
+          <div class="notif-banner" style="margin:6px 10px;">
+            <span class="notif-icon">📱</span>
+            <div class="notif-text">
+              <div class="notif-name">Instagram</div>
+              <div class="notif-msg">2 notifications queued</div>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:10px;color:var(--text-dim);margin-top:8px;position:relative;z-index:2;">Drive mode disengaged at stop</div>
+          <div class="hud-road-bg"></div>
+        `
+      },
+      {
+        id: "tf5-5", label: "Trip Summary", device: "phone",
+        annotations: [
+          {tag: "US07", text: "Post-trip summary shows blocked notifications and safety score."},
+          {tag: "HCI: Transparency", text: "User sees what was filtered — maintains trust that nothing critical was missed.", hci: true}
+        ],
+        render: () => `
+          <div class="status-bar"><span>10:02</span><span>✓ Trip Complete</span><span>100%</span></div>
+          <div class="screen-title-bar"><div class="screen-title">Trip Summary</div></div>
+          <div class="summary-stat">
+            <div class="summary-icon green">📍</div>
+            <div><div style="font-size:14px;font-weight:500;">University of Queensland</div><div style="font-size:11px;color:var(--text-dim);">Arrived on time</div></div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-icon blue">⏱</div>
+            <div><div style="font-size:14px;font-weight:500;">18 minutes</div><div style="font-size:11px;color:var(--text-dim);">Total drive time</div></div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-icon yellow">🔕</div>
+            <div><div style="font-size:14px;font-weight:500;">7 notifications filtered</div><div style="font-size:11px;color:var(--text-dim);">Queued for after drive</div></div>
+          </div>
+          <div class="summary-stat">
+            <div class="summary-icon green">🛡</div>
+            <div><div style="font-size:14px;font-weight:500;">Safety score: Excellent</div><div style="font-size:11px;color:var(--success);">Zero eyes-off-road events</div></div>
+          </div>
+          <div class="big-btn outline" onclick="nextStep()">View Queued Messages</div>
+          <div class="app-bottom-nav">
+            <div class="bottom-tab active"><span class="bottom-tab-icon">📊</span>Summary</div>
+            <div class="bottom-tab"><span class="bottom-tab-icon">🗺</span>Map</div>
+            <div class="bottom-tab"><span class="bottom-tab-icon">⚙️</span>Settings</div>
+          </div>
+        `
+      }
+    ]
+  }
+];
+
+// ===================== STATE =====================
+let currentFlow = 0;
+let currentScreen = 0;
+
+function switchFlow(idx) {
+  currentFlow = idx;
+  currentScreen = 0;
+  document.querySelectorAll('.nav-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+  render();
+}
+
+function setScreen(idx) {
+  currentScreen = idx;
+  render();
+}
+
+function nextStep() {
+  const flow = flows[currentFlow];
+  if (currentScreen < flow.screens.length - 1) {
+    currentScreen++;
+    render();
+  }
+}
+
+function render() {
+  const flow = flows[currentFlow];
+  const screen = flow.screens[currentScreen];
+
+  // Sidebar
+  document.getElementById('sidebar-title').textContent = flow.name;
+  const list = document.getElementById('screen-list');
+  list.innerHTML = flow.screens.map((s, i) => `
+    <div class="screen-item ${i === currentScreen ? 'active' : ''}" onclick="setScreen(${i})">
+      <span class="screen-num">${String(i+1).padStart(2,'0')}</span>
+      ${s.label}
+    </div>
+  `).join('');
+
+  // Device label
+  const isHud = screen.device === 'hud';
+  document.getElementById('device-label').textContent = isHud ? '👓 AR Glasses HUD View' : '📱 Companion App';
+
+  // Device container
+  const container = document.getElementById('device-container');
+  if (isHud) {
+    container.innerHTML = `
+      <div class="hud-device">
+        <div class="hud-viewfinder">${screen.render()}</div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <div class="phone-device">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">${screen.render()}</div>
+      </div>
+    `;
+  }
+
+  // Flow buttons
+  const btns = document.getElementById('flow-btns');
+  btns.innerHTML = flow.screens.map((s, i) => `
+    <div class="flow-btn ${i === currentScreen ? 'active-step' : ''}" onclick="setScreen(${i})">${i+1}. ${s.label}</div>
+  `).join('');
+
+  // Annotations
+  const ann = document.getElementById('annotations');
+  ann.innerHTML = `
+    <div class="ann-card" style="background:rgba(0,212,255,0.05);border-color:rgba(0,212,255,0.2);margin-bottom:14px;">
+      <div class="ann-tag">USER STORY</div>
+      <div class="ann-text">${flow.userStory}</div>
+    </div>
+    <div class="ann-card" style="background:rgba(124,58,237,0.05);border-color:rgba(124,58,237,0.2);margin-bottom:14px;">
+      <div class="ann-tag">SCREEN</div>
+      <div class="ann-text" style="font-weight:600;">${screen.label}</div>
+    </div>
+    ${screen.annotations.map(a => `
+      <div class="ann-card">
+        <div class="ann-tag">${a.tag}</div>
+        <div class="ann-text">${a.text}</div>
+        ${a.hci ? '<div class="hci-tag">HCI Principle</div>' : ''}
+      </div>
+    `).join('')}
+    ${currentScreen < flow.screens.length - 1 ? `
+      <div style="margin-top:16px;">
+        <div class="big-btn" onclick="nextStep()" style="border-radius:10px;font-size:13px;padding:10px;cursor:pointer;">Next → ${flow.screens[currentScreen+1].label}</div>
+      </div>
+    ` : `
+      <div style="margin-top:16px;padding:12px;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);border-radius:8px;text-align:center;">
+        <div style="font-size:20px;">✓</div>
+        <div style="font-size:12px;color:var(--success);margin-top:4px;">Flow complete!</div>
+      </div>
+    `}
+  `;
+}
+
+// Init
+render();
+</script>
+</body>
+</html>

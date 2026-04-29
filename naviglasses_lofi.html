@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NaviGlasses – Low-Fidelity Wireframes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f5f0e8;
+    font-family: 'Caveat', cursive;
+    color: #2a2a2a;
+    padding: 20px;
+  }
+
+  .page-title {
+    text-align: center;
+    font-family: 'Special Elite', cursive;
+    font-size: 28px;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+    border-bottom: 3px solid #2a2a2a;
+    padding-bottom: 10px;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 30px;
+    font-style: italic;
+  }
+
+  .task-section {
+    margin-bottom: 40px;
+    background: #fffdf7;
+    border: 2px solid #2a2a2a;
+    border-radius: 4px;
+    padding: 16px;
+    box-shadow: 4px 4px 0 #2a2a2a;
+  }
+
+  .task-label {
+    font-family: 'Special Elite', cursive;
+    font-size: 18px;
+    background: #2a2a2a;
+    color: #f5f0e8;
+    display: inline-block;
+    padding: 4px 12px;
+    margin-bottom: 12px;
+    border-radius: 2px;
+  }
+
+  .us-tag {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+
+  .frames-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    align-items: flex-start;
+  }
+
+  .frame-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 130px;
+  }
+
+  .arrow {
+    font-size: 22px;
+    color: #555;
+    align-self: center;
+    margin-top: -20px;
+    padding: 0 2px;
+  }
+
+  .frame {
+    width: 130px;
+    border: 2px solid #2a2a2a;
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Glasses HUD frame style */
+  .frame.hud-frame {
+    border-radius: 50px / 20px;
+    border: 2px dashed #2a2a2a;
+    background: #eaf4ff;
+  }
+
+  .frame-header {
+    background: #2a2a2a;
+    color: #f5f0e8;
+    font-size: 11px;
+    padding: 3px 6px;
+    text-align: center;
+    font-family: 'Caveat', cursive;
+  }
+
+  .frame-header.hud {
+    background: #1a3a5c;
+    border-radius: 0;
+  }
+
+  .frame-body {
+    padding: 8px 6px;
+    min-height: 140px;
+    position: relative;
+  }
+
+  /* Wireframe UI elements */
+  .wf-search-bar {
+    height: 18px;
+    border: 1.5px solid #2a2a2a;
+    border-radius: 9px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    font-size: 11px;
+    color: #888;
+  }
+
+  .wf-box {
+    border: 1.5px solid #aaa;
+    border-radius: 2px;
+    margin-bottom: 5px;
+    padding: 3px 5px;
+    font-size: 11px;
+    background: #f9f9f9;
+  }
+
+  .wf-box.active {
+    border-color: #2a2a2a;
+    background: #e8f0ff;
+    font-weight: 700;
+  }
+
+  .wf-box.dark {
+    background: #2a2a2a;
+    color: #f5f0e8;
+    border-color: #2a2a2a;
+  }
+
+  .wf-btn {
+    border: 2px solid #2a2a2a;
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 4px;
+    background: #f5f0e8;
+  }
+
+  .wf-btn.primary {
+    background: #2a2a2a;
+    color: #f5f0e8;
+  }
+
+  .wf-mic {
+    width: 30px;
+    height: 40px;
+    border: 2px solid #2a2a2a;
+    border-radius: 15px;
+    margin: 8px auto 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+  }
+
+  .wf-mic::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 8px;
+    border: 2px solid #2a2a2a;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+
+  /* HUD elements */
+  .hud-road {
+    width: 60px;
+    height: 55px;
+    border-left: 3px solid #555;
+    border-right: 3px solid #555;
+    margin: 4px auto;
+    position: relative;
+  }
+
+  .hud-arrow {
+    font-size: 28px;
+    text-align: center;
+    color: #0066cc;
+    line-height: 1;
+  }
+
+  .hud-blue-line {
+    height: 3px;
+    background: repeating-linear-gradient(90deg, #0066cc 0, #0066cc 8px, transparent 8px, transparent 14px);
+    margin: 6px 4px;
+    border-radius: 2px;
+  }
+
+  .hud-lane {
+    display: flex;
+    gap: 4px;
+    margin: 4px 2px;
+    justify-content: center;
+  }
+
+  .lane-box {
+    flex: 1;
+    height: 20px;
+    border: 1.5px solid #aaa;
+    border-radius: 2px;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lane-box.active-lane {
+    background: #d4edda;
+    border-color: #28a745;
+    font-weight: 700;
+    font-size: 8px;
+  }
+
+  .wf-map-placeholder {
+    height: 55px;
+    background: repeating-linear-gradient(
+      45deg,
+      #eee,
+      #eee 3px,
+      #f8f8f8 3px,
+      #f8f8f8 12px
+    );
+    border: 1.5px solid #ccc;
+    border-radius: 2px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #888;
+  }
+
+  .wf-route-list {
+    font-size: 10px;
+    line-height: 1.6;
+    color: #333;
+  }
+
+  .wf-route-list div {
+    border-bottom: 1px dashed #ddd;
+    padding: 1px 0;
+  }
+
+  .wf-progress {
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    margin: 6px 0;
+    border: 1px solid #ccc;
+  }
+
+  .wf-progress-fill {
+    height: 100%;
+    background: #2a2a2a;
+    border-radius: 3px;
+    width: 60%;
+  }
+
+  .wf-notif {
+    background: #fff3cd;
+    border: 1.5px solid #ffc107;
+    border-radius: 3px;
+    padding: 3px 5px;
+    font-size: 10px;
+    margin-bottom: 5px;
+  }
+
+  .wf-notif.dismissed {
+    opacity: 0.4;
+    text-decoration: line-through;
+  }
+
+  .wf-check {
+    font-size: 24px;
+    text-align: center;
+    color: #28a745;
+    margin: 8px 0 4px;
+  }
+
+  .wf-pin {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .wf-compass {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #2a2a2a;
+    border-radius: 50%;
+    margin: 4px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    position: relative;
+  }
+
+  .wf-vibrate {
+    font-size: 10px;
+    text-align: center;
+    color: #555;
+    background: #f0f0f0;
+    border: 1px dashed #888;
+    border-radius: 3px;
+    padding: 2px;
+    margin: 3px 0;
+  }
+
+  .wf-dim {
+    height: 35px;
+    background: linear-gradient(to bottom, rgba(0,102,204,0.15) 0%, rgba(0,0,0,0.35) 100%);
+    border: 1.5px solid #0066cc;
+    border-radius: 2px;
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: #004a99;
+    font-weight: 700;
+  }
+
+  .wf-warning {
+    background: #ffe0e0;
+    border: 1.5px solid #dc3545;
+    border-radius: 3px;
+    padding: 3px 5px;
+    font-size: 10px;
+    text-align: center;
+    margin: 4px 0;
+  }
+
+  .wf-floating-pin {
+    background: #d4edda;
+    border: 1.5px solid #28a745;
+    border-radius: 3px;
+    padding: 2px 5px;
+    font-size: 9px;
+    margin: 3px 0;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .frame-caption {
+    font-size: 12px;
+    text-align: center;
+    margin-top: 6px;
+    color: #444;
+    max-width: 130px;
+    font-style: italic;
+  }
+
+  .annotation {
+    font-size: 12px;
+    background: #fffbcc;
+    border-left: 3px solid #f0c040;
+    padding: 6px 10px;
+    margin-top: 12px;
+    color: #444;
+  }
+
+  .wf-speed {
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    border: 2px solid #2a2a2a;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 6px auto;
+    font-size: 12px;
+  }
+
+  .wf-traffic-light {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 16px;
+    margin: 0 auto 6px;
+  }
+
+  .tl-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #555;
+    background: #ddd;
+  }
+
+  .tl-dot.green { background: #28a745; }
+  .tl-dot.yellow { background: #ffc107; }
+  .tl-dot.red { background: #dc3545; }
+
+  .section-divider {
+    text-align: center;
+    color: #aaa;
+    font-size: 12px;
+    margin: 5px 0 12px;
+    letter-spacing: 2px;
+  }
+
+  .frames-row-with-arrows {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">NaviGlasses — Low-Fidelity Wireframes</h1>
+<p class="subtitle">Team Navigation · DECO2500/7250 · 5 Task Flows · Paper Prototype</p>
+
+<!-- ===== TASK FLOW 1 ===== -->
+<div class="task-section">
+  <div class="task-label">Task Flow 1: AR Line-of-Sight Navigation (Driving)</div>
+  <div class="us-tag">US01 — "As a vehicle user, I want an easier visual of a map so that drivers no longer look away from the road."</div>
+  <div class="frames-row-with-arrows">
+
+    <div class="frame-wrap">
+      <div class="frame">
+        <div class="frame-header">Companion App</div>
+        <div class="frame-body">
+          <div class="wf-search-bar">🔍 Where to?</div>
+          <div class="wf-box active">📍 University of Queensland</div>
+          <div class="wf-box">🕐 Recent: Home</div>
+          <div class="wf-box">🕐 Recent: Work</div>
+          <div style="margin-top:8px;">
+            <div class="wf-btn primary">Start Navigation</div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-caption">1. Enter destination on phone app</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame">
+        <div class="frame-header">Voice Activation</div>
+        <div class="frame-body" style="text-align:center;">
+          <div class="wf-mic">🎙</div>
+          <div style="font-size:12px; margin-top:12px; color:#555; text-align:center;">
+            "Navigate to UQ"
+          </div>
+          <div style="margin-top:10px;">
+            <div class="wf-btn">🔊 Listening...</div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-caption">2. Voice command activates glasses</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Road View</div>
+        <div class="frame-body">
+          <div style="font-size:10px; color:#1a3a5c; margin-bottom:4px;">▲ Straight 500m</div>
+          <div class="hud-blue-line"></div>
+          <div class="hud-blue-line"></div>
+          <div class="hud-blue-line"></div>
+          <div style="display:flex; justify-content:space-between; margin-top:6px;">
+            <div style="font-size:10px; color:#555;">ETA: 12min</div>
+            <div style="font-size:10px; color:#0066cc; font-weight:700;">HUD ON</div>
+          </div>
+          <div style="font-size:9px; color:#888; margin-top:4px;">Eyes on road ✓</div>
+        </div>
+      </div>
+      <div class="frame-caption">3. HUD initialises at eye level</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Turn Alert</div>
+        <div class="frame-body">
+          <div class="hud-arrow">←</div>
+          <div style="font-size:11px; color:#0066cc; text-align:center; font-weight:700;">Turn LEFT<br>in 80m</div>
+          <div class="hud-blue-line" style="background: repeating-linear-gradient(90deg, #0066cc 0, #0066cc 8px, transparent 8px, transparent 14px);"></div>
+          <div class="wf-vibrate">〰 Left arm vibrates</div>
+        </div>
+      </div>
+      <div class="frame-caption">4. Turn arrow overlaid on road</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Notification</div>
+        <div class="frame-body">
+          <div class="hud-blue-line"></div>
+          <div class="wf-notif dismissed">📱 Msg: Dad</div>
+          <div style="font-size:9px; color:#555; margin-bottom:5px;">Auto-silenced ↓</div>
+          <div style="font-size:9px; background:#e8f4ff; border:1px solid #0066cc; border-radius:2px; padding:3px; text-align:center;">· unread</div>
+          <div style="font-size:9px; color:#888; margin-top:4px;">Map unobstructed ✓</div>
+        </div>
+      </div>
+      <div class="frame-caption">5. Notifications filtered / silenced</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Arrival</div>
+        <div class="frame-body" style="text-align:center;">
+          <div class="wf-pin">📍</div>
+          <div class="wf-check">✓</div>
+          <div style="font-size:11px; color:#28a745; font-weight:700;">You've arrived!</div>
+          <div style="font-size:9px; color:#555; margin-top:4px;">Green pin anchored<br>to building</div>
+        </div>
+      </div>
+      <div class="frame-caption">6. Destination pin anchors to building</div>
+    </div>
+
+  </div>
+  <div class="annotation">📝 Annotation: Removes "glance down" steps. HUD keeps eyes on road (US01). Notifications auto-silenced above 10km/h (US07). Links to HCI principle: Visibility of system status + Minimal cognitive load.</div>
+</div>
+
+<!-- ===== TASK FLOW 2 ===== -->
+<div class="task-section">
+  <div class="task-label">Task Flow 2: Predictive Lane Selection (Multi-Lane Highway)</div>
+  <div class="us-tag">US04 — "As a driver in complex urban environments, I want proactive lane-level guidance so that I don't miss exits."</div>
+  <div class="frames-row-with-arrows">
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Highway</div>
+        <div class="frame-body">
+          <div style="font-size:10px; color:#1a3a5c; margin-bottom:4px;">Exit in 2.0km</div>
+          <div class="hud-lane">
+            <div class="lane-box">L1</div>
+            <div class="lane-box active-lane">✓ L2</div>
+            <div class="lane-box">L3</div>
+          </div>
+          <div style="font-size:9px; color:#28a745; text-align:center; font-weight:700;">Get in this lane now</div>
+        </div>
+      </div>
+      <div class="frame-caption">1. Proactive lane alert 2km early</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Lane Glow</div>
+        <div class="frame-body">
+          <div class="hud-lane">
+            <div class="lane-box" style="background:#f8d7da; border-color:#dc3545; font-size:8px;">Exit<br>Only</div>
+            <div class="lane-box active-lane" style="font-size:8px;">✓ Safe<br>Lane</div>
+            <div class="lane-box">L3</div>
+          </div>
+          <div style="font-size:9px; color:#0066cc; text-align:center; margin-top:4px;">Lane glows green in AR</div>
+          <div class="hud-blue-line"></div>
+        </div>
+      </div>
+      <div class="frame-caption">2. Correct lane highlighted green in AR</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Traffic Light</div>
+        <div class="frame-body" style="text-align:center;">
+          <div class="wf-traffic-light">
+            <div class="tl-dot red"></div>
+            <div class="tl-dot yellow"></div>
+            <div class="tl-dot"></div>
+          </div>
+          <div style="font-size:11px; font-weight:700; color:#2a2a2a;">18s</div>
+          <div style="font-size:9px; color:#555;">Slow down to merge</div>
+          <div class="hud-blue-line" style="margin-top:6px;"></div>
+        </div>
+      </div>
+      <div class="frame-caption">3. Traffic light countdown shown</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Safe Merge</div>
+        <div class="frame-body">
+          <div class="hud-lane">
+            <div class="lane-box">L1</div>
+            <div class="lane-box active-lane" style="font-size:8px;">✓ You</div>
+            <div class="lane-box">L3</div>
+          </div>
+          <div style="font-size:9px; color:#28a745; text-align:center; margin-top:4px; font-weight:700;">Safe merge ✓</div>
+          <div style="font-size:9px; color:#555; margin-top:2px;">Exit in 400m</div>
+        </div>
+      </div>
+      <div class="frame-caption">4. User merges safely, calmly</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Exit Confirmed</div>
+        <div class="frame-body" style="text-align:center;">
+          <div class="wf-check">✓</div>
+          <div style="font-size:11px; color:#28a745; font-weight:700;">Correct exit!</div>
+          <div style="font-size:9px; color:#555; margin-top:4px;">Continuing route…</div>
+          <div class="hud-blue-line" style="margin-top:8px;"></div>
+        </div>
+      </div>
+      <div class="frame-caption">5. Visual confirmation of correct exit</div>
+    </div>
+
+  </div>
+  <div class="annotation">📝 Annotation: Solves "ambiguity in instructions" (Theme 2). Lane identified 2km early instead of at the last moment. Traffic light integration addresses US05. HCI principle: Error prevention + Recognition over recall.</div>
+</div>
+
+<!-- ===== TASK FLOW 3 ===== -->
+<div class="task-section">
+  <div class="task-label">Task Flow 3: Continuous Cyclist Navigation</div>
+  <div class="us-tag">US08 — "As a cyclist, I want navigation accessible via wearable devices so I don't have to stop to check my phone."</div>
+  <div class="frames-row-with-arrows">
+
+    <div class="frame-wrap">
+      <div class="frame">
+        <div class="frame-header">Companion App</div>
+        <div class="frame-body">
+          <div style="font-size:10px; color:#555; margin-bottom:6px;">Glasses paired ✓</div>
+          <div class="wf-box active">🚲 Cyclist mode</div>
+          <div class="wf-search-bar">🔍 Set destination</div>
+          <div style="margin-top:6px;" class="wf-btn primary">Start Ride</div>
+        </div>
+      </div>
+      <div class="frame-caption">1. Pair glasses, set destination</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Peripheral</div>
+        <div class="frame-body">
+          <div style="font-size:9px; color:#555; margin-bottom:4px;">Peripheral arrow (always visible)</div>
+          <div class="wf-compass">🧭</div>
+          <div style="font-size:10px; text-align:center; color:#0066cc;">↑ Next: 800m</div>
+          <div style="font-size:9px; color:#888; margin-top:4px;">Low brightness<br>non-intrusive</div>
+        </div>
+      </div>
+      <div class="frame-caption">2. Compass HUD in peripheral vision</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Haptic Turn</div>
+        <div class="frame-body" style="text-align:center;">
+          <div style="font-size:28px;">←</div>
+          <div style="font-size:10px; color:#0066cc; font-weight:700;">Turn LEFT<br>in 50m</div>
+          <div class="wf-vibrate" style="margin-top:8px;">〰〰 Left arm vibrates</div>
+        </div>
+      </div>
+      <div class="frame-caption">3. Haptic + visual turn cue at 50m</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — 3D Icon</div>
+        <div class="frame-body" style="text-align:center;">
+          <div style="font-size:22px; color:#0066cc;">↩</div>
+          <div style="font-size:9px; color:#555; margin-top:4px;">3D "Turn" icon<br>pinned to corner</div>
+          <div class="wf-floating-pin" style="margin-top:6px;">📍 Turn here</div>
+        </div>
+      </div>
+      <div class="frame-caption">4. 3D turn icon on actual street corner</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">Missed Turn → Reroute</div>
+        <div class="frame-body">
+          <div style="font-size:10px; color:#dc3545; font-weight:700; text-align:center;">Rerouting…</div>
+          <div style="font-size:9px; color:#555; margin: 4px 0; text-align:center;">Breadcrumb trail shown</div>
+          <div class="hud-blue-line" style="background: repeating-linear-gradient(90deg, #dc3545 0, #dc3545 6px, transparent 6px, transparent 12px);"></div>
+          <div style="font-size:9px; color:#555; text-align:center; margin-top:4px;">New route calculated</div>
+        </div>
+      </div>
+      <div class="frame-caption">5. Auto-reroute if turn missed (no stopping)</div>
+    </div>
+
+  </div>
+  <div class="annotation">📝 Annotation: Eliminates "Stop-and-Go" friction. Navigation becomes continuous, not discrete. Haptic cues mean cyclist never needs to look away or stop. Addresses accessibility for non-car users. HCI principle: User control + Flexibility of use.</div>
+</div>
+
+<!-- ===== TASK FLOW 4 ===== -->
+<div class="task-section">
+  <div class="task-label">Task Flow 4: High-Density CBD Navigation (Overlapping Roads)</div>
+  <div class="us-tag">US06 — "As a navigator in unfamiliar high-density areas, I want an interface that clearly distinguishes overlapping roads."</div>
+  <div class="frames-row-with-arrows">
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Complex Zone</div>
+        <div class="frame-body">
+          <div style="font-size:9px; color:#555; margin-bottom:4px;">Multiple road levels detected</div>
+          <div class="wf-dim">⬛ Lower road dimmed</div>
+          <div class="wf-dim" style="background: linear-gradient(to bottom, rgba(0,102,204,0.4) 0%, rgba(0,102,204,0.1) 100%); border-color:#0066cc;">🔵 Your path — neon blue</div>
+        </div>
+      </div>
+      <div class="frame-caption">1. Depth-layering mode activates</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Floating Pins</div>
+        <div class="frame-body">
+          <div class="wf-floating-pin">Story Bridge →</div>
+          <div class="wf-floating-pin" style="opacity:0.4; background:#eee; border-color:#aaa;">Riverside Dr ↓</div>
+          <div style="font-size:9px; color:#555; margin-top:4px;">Glance to enlarge pin label</div>
+          <div class="wf-btn" style="margin-top:4px; font-size:10px;">EXIT NOW →</div>
+        </div>
+      </div>
+      <div class="frame-caption">2. Digital pins anchored to physical exits</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Countdown</div>
+        <div class="frame-body" style="text-align:center;">
+          <div style="font-size:10px; color:#555; margin-bottom:4px;">Distance to turn-off:</div>
+          <div style="font-size:24px; font-weight:700; color:#0066cc;">47m</div>
+          <div class="hud-blue-line"></div>
+          <div style="font-size:9px; color:#555; margin-top:4px;">Meter-by-meter countdown<br>on road surface</div>
+        </div>
+      </div>
+      <div class="frame-caption">3. Metre-by-metre countdown projected</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">Road Hazard Alert</div>
+        <div class="frame-body">
+          <div class="wf-warning">⚠️ Construction ahead<br>300m</div>
+          <div style="font-size:9px; color:#555; margin-top:4px;">Hazard icon projected<br>on road surface</div>
+          <div class="hud-blue-line" style="margin-top:6px;"></div>
+        </div>
+      </div>
+      <div class="frame-caption">4. Road hazard overlay (US05)</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Confirmed</div>
+        <div class="frame-body" style="text-align:center;">
+          <div class="wf-check">✓</div>
+          <div style="font-size:10px; color:#28a745; font-weight:700;">Correct ramp!</div>
+          <div style="font-size:9px; color:#555; margin-top:4px;">Dimmer fades away<br>FOV returns to normal</div>
+        </div>
+      </div>
+      <div class="frame-caption">5. Confirmation — dimmer fades</div>
+    </div>
+
+  </div>
+  <div class="annotation">📝 Annotation: Uses "Spatial Anchor" metaphor. 3D world becomes the interface. Solves Brisbane CBD overlapping roads problem (Theme 3, Interview quotes). HCI principle: Match between system and the real world.</div>
+</div>
+
+<!-- ===== TASK FLOW 5 ===== -->
+<div class="task-section">
+  <div class="task-label">Task Flow 5: Notification Management & Settings</div>
+  <div class="us-tag">US07 — "As a mobile user, I want a navigation interface that filters non-essential notifications so my visual map is never obscured."</div>
+  <div class="frames-row-with-arrows">
+
+    <div class="frame-wrap">
+      <div class="frame">
+        <div class="frame-header">Companion App — Settings</div>
+        <div class="frame-body">
+          <div style="font-size:11px; font-weight:700; margin-bottom:6px;">Notification Rules</div>
+          <div class="wf-box active">🔇 Drive mode: ON</div>
+          <div class="wf-box">📞 Calls: Allow</div>
+          <div class="wf-box">💬 Messages: Queue</div>
+          <div class="wf-box">📱 Apps: Block</div>
+          <div class="wf-btn primary" style="margin-top:6px;">Save</div>
+        </div>
+      </div>
+      <div class="frame-caption">1. User configures notification rules</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Driving</div>
+        <div class="frame-body">
+          <div class="hud-blue-line"></div>
+          <div style="font-size:10px; color:#1a3a5c; text-align:center; margin: 4px 0;">↑ Continue 1.2km</div>
+          <div class="hud-blue-line"></div>
+          <div style="font-size:9px; color:#888; text-align:center; margin-top:4px;">Map fully unobstructed</div>
+        </div>
+      </div>
+      <div class="frame-caption">2. Clean HUD during active navigation</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">AR HUD — Incoming Call</div>
+        <div class="frame-body">
+          <div class="hud-blue-line"></div>
+          <div style="font-size:9px; color:#555; margin: 4px 0; border: 1px solid #aaa; border-radius:2px; padding:3px; text-align:center;">
+            📞 Mum calling<br>
+            <span style="font-size:8px;">[hands-free gesture]</span>
+          </div>
+          <div class="wf-btn" style="font-size:9px;">👋 Swipe to dismiss</div>
+        </div>
+      </div>
+      <div class="frame-caption">3. Call shown with gesture-dismiss option</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame hud-frame">
+        <div class="frame-header hud">Stopped — Notifications</div>
+        <div class="frame-body">
+          <div style="font-size:9px; color:#28a745; margin-bottom:4px;">Speed: 0 km/h (parked)</div>
+          <div class="wf-notif">💬 3 new messages</div>
+          <div class="wf-notif">📱 Instagram notification</div>
+          <div style="font-size:9px; color:#555; margin-top:2px;">Queued notifs now shown</div>
+        </div>
+      </div>
+      <div class="frame-caption">4. Queued notifications shown when stopped</div>
+    </div>
+
+    <div class="arrow">→</div>
+
+    <div class="frame-wrap">
+      <div class="frame">
+        <div class="frame-header">Companion App — History</div>
+        <div class="frame-body">
+          <div style="font-size:11px; font-weight:700; margin-bottom:6px;">Trip Summary</div>
+          <div class="wf-box">📍 Arrived: UQ St Lucia</div>
+          <div class="wf-box">⏱ Duration: 18 min</div>
+          <div class="wf-box">🔕 Blocked: 5 notifs</div>
+          <div class="wf-progress"><div class="wf-progress-fill"></div></div>
+          <div style="font-size:9px; color:#555;">Safety score: Good ✓</div>
+        </div>
+      </div>
+      <div class="frame-caption">5. Trip summary with safety report</div>
+    </div>
+
+  </div>
+  <div class="annotation">📝 Annotation: Addresses "distraction from alerts" cluster in affinity diagram. Speed-based filtering (≥10km/h = block) ensures map is never obscured during critical driving moments. HCI principle: User control + Freedom from interruption.</div>
+</div>
+
+<div style="text-align:center; font-size:13px; color:#888; margin-top:20px; font-style:italic; font-family:'Special Elite',cursive;">
+  NaviGlasses Low-Fidelity Paper Prototype · Team Navigation · DECO2500/7250 Semester 1, 2026
+</div>
+
+</body>
+</html>
